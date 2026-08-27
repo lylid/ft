@@ -1,0 +1,8 @@
+# Build artifacts
+*.o
+ft
+ft-static
+ft-*.tar.gz
+
+# Local tool state
+.claude/

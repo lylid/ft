@@ -1,0 +1,112 @@
+-- ft (Fearless Terminal) Lua configuration example
+-- Copy this file to ~/.config/ft/config.lua
+
+local st = require("st")
+
+-- Example: Set a different font
+-- st.set_font("IBM Plex Mono:pixelsize=14:antialias=true:autohint=true")
+
+-- Example: Set font size (keeps current font family)
+-- st.set_font_size(14)
+
+-- Example: Use a Nerd Font
+-- st.set_font("BlexMono Nerd Font:pixelsize=13:antialias=true:autohint=true")
+
+-- Example: Enable logging for all terminals
+-- st.set_logging(true)
+
+-- Example: Set window icon (override default FT logo with emoji)
+-- By default, the PNG icon from assets/icons/ is used (the FT logo).
+-- Uncomment to use an emoji instead:
+-- st.set_icon("🚀")  -- Options: 🖥️, 💻, 🐱, 🦊, 🐧, 🚀, etc.
+
+-- Example: Set cursor blink speed (0 = no blink)
+-- st.set_cursor_blink(500)
+
+-- Example: Set active pane border width in pixels (0 = no border, default = 1)
+-- st.set_pane_border(1)
+
+-- Example: Set active pane border color (color index)
+-- Colors: 0=black, 1=red, 2=green, 3=yellow, 4=blue, 5=magenta, 6=cyan, 7=white
+--         8=bright black (gray), 9-15=bright versions, 14=bright cyan (default)
+-- st.set_pane_border_color(7)   -- white/light gray
+-- st.set_pane_border_color(8)   -- gray (same as split border)
+
+-- ===== File Handlers (Ctrl+Click) =====
+-- Configure how files are opened when Ctrl+Clicking on paths
+-- Handler types: "terminal" (new ft window), "app" (external), "xdg" (system default)
+
+-- Example: Open PDFs with atril or okular
+-- st.set_file_handler("pdf", "app", "atril %s")
+-- st.set_file_handler("pdf", "app", "okular %s")
+
+-- Example: Open images with feh
+-- st.set_file_handler("png", "app", "feh %s")
+-- st.set_file_handler("jpg", "app", "feh %s")
+-- st.set_file_handler("gif", "app", "feh %s")
+
+-- Example: Open videos with vlc or mpv
+-- st.set_file_handler("mp4", "app", "mpv %s")
+-- st.set_file_handler("mkv", "app", "mpv %s")
+
+-- Example: Open HTML with browser (xdg-open)
+-- st.set_file_handler("html", "xdg")
+
+-- Example: Set default handler for all other files (nvim in new terminal)
+-- st.set_file_handler("*", "terminal", "nvim %s")
+
+-- ===== Custom Tab Titles =====
+-- Example: Dynamic tab title formatter
+-- Called for each tab when drawing the tab bar
+--[[
+function st.format_tab_title(index, is_active, title, process)
+    -- index: tab number (1-based)
+    -- is_active: boolean
+    -- title: terminal title (from escape sequences)
+    -- process: foreground process name (e.g., "nvim", "zsh")
+
+    -- Show icon for nvim
+    if process == "nvim" then
+        return "  " .. title .. " "
+    end
+
+    -- Show process name for others
+    return " " .. process .. " "
+end
+]]
+
+-- ===== Custom Keybindings =====
+-- Example: Custom keybinding handler
+-- Return true to consume the key, false to pass to default handlers
+--[[
+function st.on_key(mod, keysym)
+    -- mod = {ctrl=bool, shift=bool, alt=bool, super=bool}
+    -- keysym = X11 keysym (integer)
+
+    -- Ctrl++ for zoom in
+    if mod.ctrl and keysym == 43 then  -- 43 = '+'
+        st.zoom(1)
+        return true
+    end
+
+    -- Ctrl+- for zoom out
+    if mod.ctrl and keysym == 45 then  -- 45 = '-'
+        st.zoom(-1)
+        return true
+    end
+
+    -- Ctrl+0 for reset zoom
+    if mod.ctrl and keysym == 48 then  -- 48 = '0'
+        st.zoomreset()
+        return true
+    end
+
+    return false  -- Pass to default handlers
+end
+]]
+
+-- Print config path for debugging
+print("ft config loaded from: " .. st.get_config_path())
+
+-- You can add any Lua code here that runs on startup
+-- and when you press Ctrl+Shift+F5 to reload

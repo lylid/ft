@@ -1,0 +1,49 @@
+ft changelog
+
+2026-08-27
+  - Fix: Memory leak, ~12.8 MB per closed tab or split pane.
+    terminal_free() freed the screen and alternate screen but never the
+    scrollback history, which is HISTSIZE (10000) lines allocated up front
+    per terminal. A session that opened and closed tabs grew without bound.
+  - Fix: Two libpng error paths leaked. bgimg_load() and xseticonpng()
+    freed only the row pointer array, not the rows themselves, when libpng
+    longjmped out on a broken file. The locals read after the jump were
+    also not volatile, so their values there were not guaranteed.
+  - Fix: drawutf8string() leaked the fallback FcPattern when
+    XftFontOpenPattern() failed. On success the font takes ownership; on
+    failure the caller still has to destroy it.
+
+2026-08-26
+  - Fix: Scroll-select. Dragging a selection past the top/bottom edge of a
+    pane now keeps scrolling while the button is held, instead of only
+    advancing one line per mouse-motion event (holding the pointer still
+    outside the pane stopped the scrolling altogether). Driven from the main
+    loop, tunable via autoscrolllines/autoscrolldelay in config.h.
+  - Fix: Scroll-select downwards no longer loses its anchor. selscrolldown()
+    clamped the selection origin to row 0, so once the origin scrolled above
+    the viewport the selection silently started at the wrong line. The origin
+    may now sit outside the viewport; TLINE()/tlinelen()/selnormalize()
+    resolve and clamp it against the history buffer.
+  - Fix: Selection was dropped or drifted when output arrived while viewing
+    scrollback. The viewport stays pinned to the same history content there,
+    so tscrollup() no longer also shifts the selection.
+  - Fix: A press-drag-release starting in an unfocused pane selects text
+    instead of only changing focus. The click is still swallowed when the
+    newly focused pane runs a mouse-aware app (e.g. nvim). Focusing another
+    pane now also clears the previous pane's highlight.
+
+2026-02-07
+  - Feature: Background image support. Display a PNG image behind terminal
+    text with configurable transparency using XRender compositing. The image
+    uses fill/crop scaling and rescales on window resize. Controlled via Lua
+    API: st.set_background_image(), st.set_background_opacity(),
+    st.get_background_image(), st.get_background_opacity().
+
+2026-02-06
+  - Fix: Crash when scrolling up after window maximize. History buffer
+    columns were not initialized after resize, causing garbage data to be
+    passed to libXft font rendering (segfault in libXft.so).
+  - Fix: Word/line selection (double/triple click) now works correctly when
+    scrolled into history. selsnap() was using term.line instead of TLINE().
+  - Fix: Cursor blink freezing during tty activity. The blink toggle was
+    being skipped when output arrived within the latency window.

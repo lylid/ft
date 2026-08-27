@@ -1,0 +1,11 @@
+# assets/fearless-terminal.desktop
+[Desktop Entry]
+Name=Fearless Terminal
+Comment=terminal emulator
+Exec=ft
+Icon=fearless-terminal
+Terminal=false
+Type=Application
+Categories=System;TerminalEmulator;
+Keywords=terminal;console;command;prompt;ai;
+StartupWMClass=fearless-terminal
